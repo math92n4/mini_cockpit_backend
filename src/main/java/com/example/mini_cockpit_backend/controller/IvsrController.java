@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "https://matwn.dk")
 @RequestMapping("/api/mini/ivsr")
 @RequiredArgsConstructor
 public class IvsrController {

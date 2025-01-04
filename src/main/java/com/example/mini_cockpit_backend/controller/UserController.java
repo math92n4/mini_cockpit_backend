@@ -14,8 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
+
 @RestController
+@CrossOrigin(origins = "https://matwn.dk")
 @RequestMapping("/api/mini/user")
 @RequiredArgsConstructor
 public class UserController {

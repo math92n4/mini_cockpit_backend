@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@CrossOrigin
+@CrossOrigin(origins = "https://matwn.dk")
 @RestController
 @RequestMapping("/api/mini/verify")
 @RequiredArgsConstructor
