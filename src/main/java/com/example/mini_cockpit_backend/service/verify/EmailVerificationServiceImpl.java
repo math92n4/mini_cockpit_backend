@@ -26,7 +26,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         emailVerificationRepository.save(verificationToken);
 
-        String verificationUrl = "https://matwn.dk/mini/verify?token=" + token;
+        String verificationUrl = System.getenv("DOMAIN") + "/mini/verify?token=" + token;
         sendVerificationEmail(registerRequest.getEmail(), verificationUrl);
     }
 
@@ -35,14 +35,14 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Email Verification");
-        message.setFrom("verification@matwn.dk");
+        message.setFrom(System.getenv("MAIL_USERNAME"));
         message.setText("Click the link to verify your email: " + verificationUrl);
         mailSender.send(message);
     }
 
     @Override
     public boolean canProceed(String email) {
-        return email.endsWith("gmail.com"); //email.endsWith(System.getenv("EMAIL"));
+        return email.endsWith(System.getenv("DOMAIN_EMAIL1")) || email.endsWith(System.getenv("DOMAIN_EMAIL2"));
     }
 
     @Override
