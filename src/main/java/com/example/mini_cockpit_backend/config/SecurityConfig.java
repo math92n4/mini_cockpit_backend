@@ -4,10 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -20,11 +28,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf((csrf) -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((requests) -> requests
-                        // IS SET TO NO AUTHENTICATION
-                        .requestMatchers("/**")
-                        .permitAll()
+                        .requestMatchers("/api/user/**").permitAll()
+                        .requestMatchers("/api/verify/**").permitAll()
+                        .anyRequest()
+                        .authenticated()
+                        //.requestMatchers("/**")
+                        //.permitAll()
                 )
 
                 .authenticationProvider(authenticationProvider)

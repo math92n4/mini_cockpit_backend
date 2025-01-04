@@ -1,9 +1,10 @@
-package com.example.mini_cockpit_backend.service;
+package com.example.mini_cockpit_backend.service.auth;
 
 import com.example.mini_cockpit_backend.config.JwtService;
-import com.example.mini_cockpit_backend.dto.AuthRequest;
-import com.example.mini_cockpit_backend.dto.AuthRes;
-import com.example.mini_cockpit_backend.dto.RegisterRequest;
+import com.example.mini_cockpit_backend.dto.auth.AuthRequest;
+import com.example.mini_cockpit_backend.dto.auth.AuthRes;
+import com.example.mini_cockpit_backend.dto.auth.PasswordChangeDTO;
+import com.example.mini_cockpit_backend.dto.auth.RegisterRequest;
 import com.example.mini_cockpit_backend.entity.User;
 import com.example.mini_cockpit_backend.entity.UserStatus;
 import com.example.mini_cockpit_backend.repository.UserRepository;
@@ -52,9 +53,57 @@ public class AuthService {
 
         return AuthRes.builder()
                 .token(jwtToken)
+                .email(checkUser.getEmail())
                 .build();
     }
 
+    public boolean validateToken(String token) {
+        System.out.println(token);
+        try {
+            String extractedEmail = jwtService.extractUserName(token);
+            Optional <User> optionalUser = userRepository.findByEmail(extractedEmail);
+
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                return jwtService.isTokenValid(token, user);
+            }
+            return false;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public AuthRes updateUser(String token, PasswordChangeDTO passwordChangeDTO) {
+        String email = "";
+        User foundUser = null;
+
+        if (token.startsWith("Bearer")) {
+            email = jwtService.extractUserName(token.substring(7));
+        }
+
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if(user.isPresent()) {
+            foundUser = user.get();
+            System.out.println(foundUser.getEmail());
+            if (passwordEncoder.matches(passwordChangeDTO.getOldPassword(), foundUser.getPw())) {
+
+                if (passwordChangeDTO.getNewPassword() != null && !passwordChangeDTO.getNewPassword().isEmpty()) {
+                    foundUser.setPw(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
+
+                    userRepository.save(foundUser);
+                }
+            }
+        }
+
+        var jwtToken = jwtService.generateToken(foundUser);
+
+        return AuthRes.builder()
+                .token(jwtToken)
+                .build();
+
+    }
     /*
     public AuthRes updateUser(RegisterRequest updatedUser, String userName) {
         Optional<User> user = userRepository.findByUserName(userName);

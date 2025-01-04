@@ -1,7 +1,6 @@
-package com.example.mini_cockpit_backend.service;
-import com.example.mini_cockpit_backend.dto.RegisterRequest;
+package com.example.mini_cockpit_backend.service.verify;
+import com.example.mini_cockpit_backend.dto.auth.RegisterRequest;
 import com.example.mini_cockpit_backend.entity.EmailVerification;
-import com.example.mini_cockpit_backend.entity.User;
 import com.example.mini_cockpit_backend.repository.EmailVerificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,11 +12,12 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class EmailVerificationService {
+public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     private final EmailVerificationRepository emailVerificationRepository;
     private final JavaMailSender mailSender;
 
+    @Override
     public void createVerificationToken(RegisterRequest registerRequest) {
         String token = UUID.randomUUID().toString();
         EmailVerification verificationToken = new EmailVerification();
@@ -30,7 +30,8 @@ public class EmailVerificationService {
         sendVerificationEmail(registerRequest.getEmail(), verificationUrl);
     }
 
-    private void sendVerificationEmail(String email, String verificationUrl) {
+    @Override
+    public void sendVerificationEmail(String email, String verificationUrl) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Email Verification");
@@ -39,10 +40,12 @@ public class EmailVerificationService {
         mailSender.send(message);
     }
 
+    @Override
     public boolean canProceed(String email) {
         return email.endsWith("gmail.com"); //email.endsWith(System.getenv("EMAIL"));
     }
 
+    @Override
     public Optional<EmailVerification> findByToken(String token) {
         return emailVerificationRepository.findByToken(token);
     }

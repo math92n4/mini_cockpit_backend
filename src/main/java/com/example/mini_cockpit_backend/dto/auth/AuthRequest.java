@@ -1,4 +1,4 @@
-package com.example.mini_cockpit_backend.dto;
+package com.example.mini_cockpit_backend.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthRes {
+public class AuthRequest {
 
-    private String token;
-
+    private String email;
+    private String pw;
 }

@@ -1,14 +1,14 @@
 package com.example.mini_cockpit_backend.controller;
 
-import com.example.mini_cockpit_backend.dto.AuthRequest;
-import com.example.mini_cockpit_backend.dto.AuthRes;
-import com.example.mini_cockpit_backend.dto.RegisterRequest;
+import com.example.mini_cockpit_backend.dto.auth.AuthRequest;
+import com.example.mini_cockpit_backend.dto.auth.AuthRes;
+import com.example.mini_cockpit_backend.dto.auth.PasswordChangeDTO;
+import com.example.mini_cockpit_backend.dto.auth.RegisterRequest;
 import com.example.mini_cockpit_backend.dto.Response;
-import com.example.mini_cockpit_backend.entity.User;
-import com.example.mini_cockpit_backend.entity.UserStatus;
-import com.example.mini_cockpit_backend.service.AuthService;
-import com.example.mini_cockpit_backend.service.EmailVerificationService;
-import com.example.mini_cockpit_backend.service.UserService;
+import com.example.mini_cockpit_backend.service.auth.AuthService;
+import com.example.mini_cockpit_backend.service.verify.EmailVerificationService;
+import com.example.mini_cockpit_backend.service.verify.EmailVerificationServiceImpl;
+import com.example.mini_cockpit_backend.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,6 @@ public class UserController {
 
     private final AuthService authService;
     private final EmailVerificationService emailVerificationService;
-    private final UserService userService;
 
 
     @PostMapping("/register")
@@ -43,5 +42,41 @@ public class UserController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthRes> register(@RequestBody AuthRequest authRequest) {
         return new ResponseEntity<>(authService.authenticate(authRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validate(@RequestHeader("Authorization") String header) {
+
+        try {
+            String token = header.replace("Bearer: ", "");
+            boolean isValid = authService.validateToken(token);
+
+            if(isValid) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<AuthRes> updateUserWithToken(@RequestHeader("Authorization") String token,
+                                                       @RequestBody PasswordChangeDTO passwordChangeDTO) {
+        if (token == null || token.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        try {
+            AuthRes authRes = authService.updateUser(token, passwordChangeDTO);
+            return new ResponseEntity<>(authRes, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
     }
 }

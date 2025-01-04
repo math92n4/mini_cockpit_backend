@@ -1,4 +1,4 @@
-package com.example.mini_cockpit_backend.service;
+package com.example.mini_cockpit_backend.service.user;
 
 import com.example.mini_cockpit_backend.entity.User;
 import com.example.mini_cockpit_backend.repository.UserRepository;
@@ -12,11 +12,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    public Optional<User> findById(int id) {
-        return userRepository.findById(id);
-    }
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
