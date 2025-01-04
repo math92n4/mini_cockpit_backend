@@ -31,8 +31,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/user/**").permitAll()
-                        .requestMatchers("/api/verify/**").permitAll()
+                        .requestMatchers("/api/mini/user/**").permitAll()
+                        .requestMatchers("/api/mini/verify/**").permitAll()
                         .anyRequest()
                         .authenticated()
                         //.requestMatchers("/**")
