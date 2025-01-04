@@ -26,7 +26,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         emailVerificationRepository.save(verificationToken);
 
-        String verificationUrl = "http://localhost:5173/verify?token=" + token;
+        String verificationUrl = "https://matwn.dk/mini/verify?token=" + token;
         sendVerificationEmail(registerRequest.getEmail(), verificationUrl);
     }
 

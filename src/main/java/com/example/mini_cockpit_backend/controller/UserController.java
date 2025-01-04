@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/mini/api/user")
+@RequestMapping("/api/mini/user")
 @RequiredArgsConstructor
 public class UserController {
 
