@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/ivsr")
+@RequestMapping("/mini/api/ivsr")
 @RequiredArgsConstructor
 public class IvsrController {
 

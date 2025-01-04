@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/sp/case")
+@RequestMapping("/mini/api/sp/case")
 public class SharepointCaseController {
 
     private final SharepointCaseService sharepointCaseService;

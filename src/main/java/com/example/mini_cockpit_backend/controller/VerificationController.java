@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/verify")
+@RequestMapping("/mini/api/verify")
 @RequiredArgsConstructor
 public class VerificationController {
 
