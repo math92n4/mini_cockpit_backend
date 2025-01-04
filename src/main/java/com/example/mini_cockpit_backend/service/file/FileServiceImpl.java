@@ -52,7 +52,6 @@ public class FileServiceImpl implements FileService {
                 ivsrDTO.setModelDescription(nextLine[5].replace("'", ""));
                 ivsrDTO.setColorCode(nextLine[7].replace("'", ""));
                 ivsrDTO.setOptionsString(nextLine[9].replace("'", ""));
-                ivsrDTO.setCustomerLast(nextLine[35].replace("'", ""));
 
                 if (nextLine.length > 45 && !nextLine[45].isEmpty()) {
                     String salesPerson = nextLine[45].replace("/", "");

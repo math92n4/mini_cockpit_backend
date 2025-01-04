@@ -86,21 +86,31 @@ public class AuthService {
 
         if(user.isPresent()) {
             foundUser = user.get();
-            System.out.println(foundUser.getEmail());
+
             if (passwordEncoder.matches(passwordChangeDTO.getOldPassword(), foundUser.getPw())) {
 
                 if (passwordChangeDTO.getNewPassword() != null && !passwordChangeDTO.getNewPassword().isEmpty()) {
                     foundUser.setPw(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
 
                     userRepository.save(foundUser);
+
+                } else {
+                    throw new RuntimeException("Password is empty");
                 }
+
+            } else {
+                throw new RuntimeException("Doesnt match");
             }
+
+        } else {
+            throw new RuntimeException("User not found");
         }
 
         var jwtToken = jwtService.generateToken(foundUser);
 
         return AuthRes.builder()
                 .token(jwtToken)
+                .email(foundUser.getEmail())
                 .build();
 
     }

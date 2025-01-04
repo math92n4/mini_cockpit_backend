@@ -119,4 +119,16 @@ public class IvsrController {
         }
     }
 
+    @PutMapping("")
+    public ResponseEntity<IvsrDTO> put(@RequestBody IvsrDTO ivsrDTO) {
+        System.out.println("PUT " + ivsrDTO.getProductionNumber());
+        try {
+            ivsrService.updateCar(ivsrDTO);
+            return new ResponseEntity<>(ivsrDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

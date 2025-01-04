@@ -20,7 +20,6 @@ public class IvsrDTO {
     private String colorCode;
     private String optionsString;
     private LocalDate actualProductionDate;
-    private String customerLast;
     private LocalDate purchaseAgreementDate;
     private LocalDate retailCountingDate;
     private int salesPersonNumber;

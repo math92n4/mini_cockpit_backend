@@ -18,4 +18,6 @@ public interface IvsrService {
 
     void deleteByProductionNumber(String productionNumber);
 
+    IvsrDTO updateCar(IvsrDTO ivsrDTO);
+
 }
