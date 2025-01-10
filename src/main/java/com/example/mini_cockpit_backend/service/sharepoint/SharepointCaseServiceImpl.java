@@ -50,9 +50,9 @@ public class SharepointCaseServiceImpl implements SharepointCaseService {
 
             if (customer == null) {
                 customer = new Customer();
-                customer.setEmail(sharepointDto.getCustomerMail());
+                //customer.setEmail(sharepointDto.getCustomerMail());
                 customer.setZip(sharepointDto.getZip());
-                customer.setName(sharepointDto.getCustomerName());
+                //customer.setName(sharepointDto.getCustomerName());
                 customerService.save(customer);
             }
 

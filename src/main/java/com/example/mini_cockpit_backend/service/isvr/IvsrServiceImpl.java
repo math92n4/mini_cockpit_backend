@@ -45,8 +45,8 @@ public class IvsrServiceImpl implements IvsrService {
             }
 
             if (ivsr.getCustomer() != null) {
-                ivsrDTO.setCustomerName(ivsr.getCustomer().getName());
-                ivsrDTO.setCustomerMail(ivsr.getCustomer().getEmail());
+                //ivsrDTO.setCustomerName(ivsr.getCustomer().getName());
+                //ivsrDTO.setCustomerMail(ivsr.getCustomer().getEmail());
                 ivsrDTO.setZip(ivsr.getCustomer().getZip());
             }
 
@@ -117,12 +117,15 @@ public class IvsrServiceImpl implements IvsrService {
 
         Customer customer = customerService.findByEmail(ivsrDTO.getCustomerMail());
 
+        /*
         if(customer == null) {
             customer = new Customer();
             customer.setEmail(ivsrDTO.getCustomerMail());
         }
 
         customer.setName(ivsrDTO.getCustomerName());
+        */
+
         customer.setZip(ivsrDTO.getZip());
         customerService.save(customer);
 
