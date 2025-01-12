@@ -5,6 +5,7 @@ import com.example.mini_cockpit_backend.dto.auth.AuthRes;
 import com.example.mini_cockpit_backend.dto.auth.PasswordChangeDTO;
 import com.example.mini_cockpit_backend.dto.auth.RegisterRequest;
 import com.example.mini_cockpit_backend.dto.Response;
+import com.example.mini_cockpit_backend.entity.User;
 import com.example.mini_cockpit_backend.service.auth.AuthService;
 import com.example.mini_cockpit_backend.service.verify.EmailVerificationService;
 import com.example.mini_cockpit_backend.service.verify.EmailVerificationServiceImpl;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 
 @RestController
@@ -23,13 +26,21 @@ public class UserController {
 
     private final AuthService authService;
     private final EmailVerificationService emailVerificationService;
+    private final UserService userService;
 
 
     @PostMapping("/register")
     public ResponseEntity<Response> register(@RequestBody RegisterRequest registerRequest) {
-        if (!emailVerificationService.canProceed(registerRequest.getEmail())) {
+        Optional<User> user = userService.findByEmail(registerRequest.getEmail());
+
+        if (user.isPresent()) {
+            return ResponseEntity.status(409).body(new Response(409, "Email exists"));
+        }
+
+        else if (!emailVerificationService.canProceed(registerRequest.getEmail())) {
             return ResponseEntity.status(403).body(new Response(403, "Email not allowed"));
         }
+
         try {
             emailVerificationService.createVerificationToken(registerRequest);
             authService.register(registerRequest);

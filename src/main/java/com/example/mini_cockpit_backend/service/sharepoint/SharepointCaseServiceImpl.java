@@ -38,6 +38,7 @@ public class SharepointCaseServiceImpl implements SharepointCaseService {
 
             Ivsr ivsr;
             String productionNumber = sharepointDto.getTitle();
+            System.out.println(productionNumber);
 
             if (ivsrService.doesExist(productionNumber)) {
                 ivsr = ivsrService.getByProductionNumber(productionNumber);
@@ -46,15 +47,17 @@ public class SharepointCaseServiceImpl implements SharepointCaseService {
                 ivsr.setProductionNumber(productionNumber);
             }
 
+            /*
             Customer customer = customerService.findByEmail(sharepointDto.getCustomerMail());
 
             if (customer == null) {
                 customer = new Customer();
-                //customer.setEmail(sharepointDto.getCustomerMail());
+                customer.setEmail(sharepointDto.getCustomerMail());
                 customer.setZip(sharepointDto.getZip());
-                //customer.setName(sharepointDto.getCustomerName());
+                customer.setName(sharepointDto.getCustomerName());
                 customerService.save(customer);
             }
+            */
 
             SalesPerson salesPerson = salesPersonService.findById(sharepointDto.getSalesPersonId());
 
@@ -114,7 +117,7 @@ public class SharepointCaseServiceImpl implements SharepointCaseService {
             ivsr.setModel(model);
             ivsr.setCaseType(caseType);
             ivsr.setInsurance(insurance);
-            ivsr.setCustomer(customer);
+            //ivsr.setCustomer(customer);
             ivsr.setSalesPerson(salesPerson);
 
             ivsr.setSharepointData(true);

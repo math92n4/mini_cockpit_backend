@@ -28,27 +28,31 @@ public class VerificationController {
         Optional<EmailVerification> verificationToken = emailVerificationService.findByToken(token);
 
         if (verificationToken.isEmpty()) {
-            Response response = new Response(400, "Invalid token");
+            Response response = new Response(400, "Ugyldig token");
             return ResponseEntity.badRequest().body(response);
         }
 
         EmailVerification tokenEntity = verificationToken.get();
 
         if (tokenEntity.isExpired()) {
-            Response response = new Response(400, "Token has expired");
+            emailVerificationService.handleExpiredToken(token);
+            Response response = new Response(400, "Token er udløbet");
             return ResponseEntity.badRequest().body(response);
         }
 
         User user = userService.findByEmail(tokenEntity.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Bruger ikke fundet"));
 
         if(user.getUserStatus() == UserStatus.ACITVE) {
-            return ResponseEntity.ok().body(new Response(200, "Already verified"));
+            return ResponseEntity.ok().body(new Response(200, "Allerede verificeret"));
         }
+
         user.setUserStatus(UserStatus.ACITVE);
         userService.save(user);
 
-        Response response = new Response(200, "Email has been verified");
+        Response response = new Response(200, "Bruger er nu verificeret");
+        emailVerificationService.deleteById(tokenEntity.getId());
+
         return ResponseEntity.badRequest().body(response);
     }
 }

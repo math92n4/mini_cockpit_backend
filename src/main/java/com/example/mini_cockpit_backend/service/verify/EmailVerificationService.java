@@ -9,6 +9,9 @@ public interface EmailVerificationService {
 
     void createVerificationToken(RegisterRequest registerRequest);
     void sendVerificationEmail(String email, String verificationUrl);
+
+    void handleExpiredToken(String token);
     boolean canProceed(String email);
     Optional<EmailVerification> findByToken(String token);
+    void deleteById(int id);
 }
