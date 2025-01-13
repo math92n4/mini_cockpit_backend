@@ -33,7 +33,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/api/mini/user/**").permitAll()
                         .requestMatchers("/api/mini/verify/**").permitAll()
-                        .requestMatchers("/api/mini/metabase/**").permitAll()
                         .anyRequest()
                         .authenticated()
                         //.requestMatchers("/**")

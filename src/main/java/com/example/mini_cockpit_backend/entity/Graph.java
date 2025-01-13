@@ -1,0 +1,30 @@
+package com.example.mini_cockpit_backend.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Graph {
+
+    @Id
+    private int id;
+    private String name;
+    private boolean isMetabase;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_graph",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "graph_id"))
+    private Set<User> users;
+}

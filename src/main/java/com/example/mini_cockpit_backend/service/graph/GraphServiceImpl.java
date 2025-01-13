@@ -1,21 +1,25 @@
 package com.example.mini_cockpit_backend.service.graph;
 
 import com.example.mini_cockpit_backend.dto.graphs.GraphData;
+import com.example.mini_cockpit_backend.dto.graphs.PostGraphDTO;
 import com.example.mini_cockpit_backend.dto.graphs.SalesPrModel;
 import com.example.mini_cockpit_backend.dto.graphs.SalesPrMonth;
+import com.example.mini_cockpit_backend.entity.Graph;
+import com.example.mini_cockpit_backend.repository.GraphRepository;
 import com.example.mini_cockpit_backend.service.model.ModelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GraphServiceImpl implements GraphService{
+public class GraphServiceImpl implements GraphService {
 
     private final JdbcTemplate jdbcTemplate;
-    private final ModelService modelService;
+    private final GraphRepository graphRepository;
 
     @Override
     public List<SalesPrModel> getSalesPrModel() {
@@ -53,5 +57,44 @@ public class GraphServiceImpl implements GraphService{
         List<SalesPrMonth> salesPrMonth = getSalesPrMonth();
         List<SalesPrModel> salesPrModels = getSalesPrModel();
         return new GraphData(salesPrModels, salesPrMonth);
+    }
+
+    @Override
+    public void postGraph(PostGraphDTO postGraphDTO) {
+        Graph graph = Graph.builder()
+                .id(postGraphDTO.getId())
+                .name(postGraphDTO.getName())
+                .isMetabase(true)
+                .build();
+        graphRepository.save(graph);
+    }
+
+    /*
+    public List<Graph> getMetabaseGraphInfo() {
+        return graphRepository.findByIsMetabaseTrue();
+    }
+    */
+
+    public Graph getById(int id) {
+        return graphRepository.findById(id).orElse(null);
+    }
+
+    public List<Graph> postIfNotExist(List<PostGraphDTO> postGraphDTOS) {
+        List<Graph> graphs = new ArrayList<>();
+
+        for (PostGraphDTO postGraphDTO : postGraphDTOS) {
+            Graph graph = getById(postGraphDTO.getId());
+            if (graph == null) {
+                Graph newGraph = Graph.builder()
+                        .id(postGraphDTO.getId())
+                        .name(postGraphDTO.getName())
+                        .isMetabase(true)
+                        .build();
+
+                graphRepository.save(newGraph);
+                graphs.add(newGraph);
+            }
+        }
+        return graphs;
     }
 }
