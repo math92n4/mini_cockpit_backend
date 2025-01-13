@@ -1,13 +1,13 @@
 package com.example.mini_cockpit_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -24,9 +24,11 @@ public class User implements UserDetails {
     private String pw;
     private UserStatus userStatus;
 
-
-
     @ManyToMany(mappedBy = "users")
+    @JsonBackReference
+    // got infite loop from data annotation with lombok
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Graph> graphs;
 
     public User() {}

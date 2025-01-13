@@ -24,4 +24,8 @@ public interface GraphService {
     Graph getById(int id);
 
     List<Graph> postIfNotExist(List<PostGraphDTO> postGraphDTOs);
+
+    public void save(Graph graph);
+
+    List<Graph> getGraphs();
 }

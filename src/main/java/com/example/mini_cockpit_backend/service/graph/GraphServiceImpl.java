@@ -115,4 +115,14 @@ public class GraphServiceImpl implements GraphService {
 
         return graphs;
     }
+
+    @Override
+    public void save(Graph graph) {
+        graphRepository.save(graph);
+    }
+
+    @Override
+    public List<Graph> getGraphs() {
+        return graphRepository.findAll();
+    }
 }

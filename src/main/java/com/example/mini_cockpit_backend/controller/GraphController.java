@@ -1,11 +1,11 @@
 package com.example.mini_cockpit_backend.controller;
-
-import com.example.mini_cockpit_backend.dto.graphs.PostGraphDTO;
-import com.example.mini_cockpit_backend.entity.Graph;
-import com.example.mini_cockpit_backend.service.graph.GraphService;
+import com.example.mini_cockpit_backend.dto.graphs.GraphEnabledDTO;
+import com.example.mini_cockpit_backend.service.usergraph.UserGraphService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,21 +16,33 @@ import java.util.List;
 @RequestMapping("/api/mini/graph")
 public class GraphController {
 
-    private final GraphService graphService;
+    private final UserGraphService userGraphService;
 
-    @PostMapping("/metabase")
-    public ResponseEntity<List<Graph>> postMetabaseGraphIfNotExist(@RequestBody List<PostGraphDTO> postGraphDTOs) {
-        List<Graph> graphs = graphService.postIfNotExist(postGraphDTOs);
-        return new ResponseEntity<>(graphs, HttpStatus.OK);
+    @PostMapping("/enable")
+    public ResponseEntity<String> enableGraphs(@RequestBody List<GraphEnabledDTO> graphs) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        String email = authentication.getName();
+        userGraphService.enableUserGraphs(email, graphs);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /*
-    @GetMapping("/metabase")
-    public ResponseEntity<List<Graph>> getGraphInfo() {
-        return new ResponseEntity<>(graphService.getMetabaseGraphInfo(), HttpStatus.OK);
+    @GetMapping("")
+    public ResponseEntity<List<GraphEnabledDTO>> getUserGraphs() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        String email = authentication.getName();
+        List<GraphEnabledDTO> userGraphs = userGraphService.getEnabledGraphs(email);
+        return new ResponseEntity<>(userGraphs, HttpStatus.OK);
     }
-
-    */
-
 
 }
