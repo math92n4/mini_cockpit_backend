@@ -82,6 +82,13 @@ public class GraphServiceImpl implements GraphService {
     public List<Graph> postIfNotExist(List<PostGraphDTO> postGraphDTOS) {
         List<Graph> graphs = new ArrayList<>();
 
+        List<Integer> graphIds = new ArrayList<>();
+
+        for (PostGraphDTO graph : postGraphDTOS) {
+            graphIds.add(graph.getId());
+        }
+
+
         for (PostGraphDTO postGraphDTO : postGraphDTOS) {
             Graph graph = getById(postGraphDTO.getId());
             if (graph == null) {
@@ -93,8 +100,19 @@ public class GraphServiceImpl implements GraphService {
 
                 graphRepository.save(newGraph);
                 graphs.add(newGraph);
+
+            }
+
+        }
+
+        List<Graph> allGraphs = graphRepository.findAll();
+
+        for (Graph graph : allGraphs) {
+            if(!graphIds.contains(graph.getId())) {
+                graphRepository.delete(graph);
             }
         }
+
         return graphs;
     }
 }
