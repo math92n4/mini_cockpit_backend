@@ -26,7 +26,7 @@ public class Graph {
     @ManyToMany
     @JoinTable(
             name = "user_graph",
-            joinColumns = @JoinColumn(name = "users_id"),
-            inverseJoinColumns = @JoinColumn(name = "graph_id"))
+            joinColumns = @JoinColumn(name = "graph_id"),
+            inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> users;
 }
