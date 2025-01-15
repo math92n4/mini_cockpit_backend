@@ -77,7 +77,7 @@ public class IvsrServiceImpl implements IvsrService {
 
     @Override
     public Ivsr getByProductionNumber(String productionNumber) {
-        return ivsrRepository.getReferenceById(productionNumber);
+        return ivsrRepository.getIvsrByProductionNumber(productionNumber);
     }
 
     @Override
@@ -115,20 +115,21 @@ public class IvsrServiceImpl implements IvsrService {
         model.setModelDescription(ivsrDTO.getModelDescription());
         model = modelService.save(model);
 
+        /*
         Customer customer = customerService.findByEmail(ivsrDTO.getCustomerMail());
 
-        /*
+
         if(customer == null) {
             customer = new Customer();
             customer.setEmail(ivsrDTO.getCustomerMail());
         }
 
         customer.setName(ivsrDTO.getCustomerName());
-        */
+
 
         customer.setZip(ivsrDTO.getZip());
         customerService.save(customer);
-
+        */
 
         ivsr.setActualProductionDate(ivsrDTO.getActualProductionDate());
         ivsr.setColorCode(ivsrDTO.getColorCode());
@@ -140,7 +141,7 @@ public class IvsrServiceImpl implements IvsrService {
 
 
         ivsr.setModel(model);
-        ivsr.setCustomer(customer);
+        //ivsr.setCustomer(customer);
 
         save(ivsr);
 

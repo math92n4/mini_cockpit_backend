@@ -28,7 +28,7 @@ public class IvsrSharepointServiceImpl implements IvsrSharepointService {
     @Override
     public void saveIvsrData(List<IvsrDTO> dtos) {
         for (IvsrDTO ivsrDTO : dtos) {
-            System.out.println(ivsrDTO.getModelCode());
+
             Ivsr ivsr;
             String productionNumber = ivsrDTO.getProductionNumber();
 

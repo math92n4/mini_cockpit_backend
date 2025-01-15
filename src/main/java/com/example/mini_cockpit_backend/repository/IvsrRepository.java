@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface IvsrRepository extends JpaRepository<Ivsr, String> {
 
+    Ivsr getIvsrByProductionNumber(String productionNumber);
+
 }

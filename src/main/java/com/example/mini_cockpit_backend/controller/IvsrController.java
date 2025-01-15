@@ -3,8 +3,10 @@ package com.example.mini_cockpit_backend.controller;
 import com.example.mini_cockpit_backend.api.ApiService;
 import com.example.mini_cockpit_backend.api.dto.IvsrDTO;
 import com.example.mini_cockpit_backend.api.dto.PostIvsrDTO;
+import com.example.mini_cockpit_backend.dto.FileResponse;
 import com.example.mini_cockpit_backend.dto.graphs.GraphData;
 import com.example.mini_cockpit_backend.entity.Ivsr;
+import com.example.mini_cockpit_backend.exception.FileException;
 import com.example.mini_cockpit_backend.service.file.FileService;
 import com.example.mini_cockpit_backend.service.graph.GraphService;
 import com.example.mini_cockpit_backend.service.graph.GraphServiceImpl;
@@ -62,6 +64,12 @@ public class IvsrController {
 
     @PostMapping("/add")
     public ResponseEntity<PostIvsrDTO> postIvsr(@RequestBody PostIvsrDTO postIvsrDTO) {
+
+        Ivsr foundIvsr = ivsrService.getByProductionNumber(postIvsrDTO.getProductionNumber().toUpperCase());
+        if (foundIvsr != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         try {
             Ivsr ivsr = new Ivsr();
             ivsr.setProductionNumber(postIvsrDTO.getProductionNumber().toUpperCase());
@@ -75,25 +83,30 @@ public class IvsrController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadIvsr(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<FileResponse> uploadIvsr(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+
+        FileResponse fileResponse = new FileResponse();
         File isvr = null;
+
         try {
             isvr = fileService.multipartToFile(multipartFile);
-            System.out.println(isvr);
+
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            fileResponse.addMessage("Kunne ikke konvertere fil");
+            return new ResponseEntity<>(fileResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         try {
             List<IvsrDTO> list = fileService.parseFile(String.valueOf(isvr));
             ivsrSharepointService.saveIvsrData(list);
-        } catch (Exception e) {
+        } catch (FileException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            fileResponse.setMessages(e.getErrorMessages());
+            return new ResponseEntity<>(fileResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>("Upload complete", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/graph")

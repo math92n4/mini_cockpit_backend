@@ -1,6 +1,7 @@
 package com.example.mini_cockpit_backend.service.file;
 
 import com.example.mini_cockpit_backend.api.dto.IvsrDTO;
+import com.example.mini_cockpit_backend.exception.FileException;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,16 +27,18 @@ public class FileServiceImpl implements FileService {
         return convFile;
     }
 
-    public List<IvsrDTO> parseFile(String path) {
+    public List<IvsrDTO> parseFile(String path) throws FileException {
 
         List<IvsrDTO> list = new ArrayList<>();
-
+        List<String> errorMessages = new ArrayList<>();
+        int lineNumber = 1;
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(path))) {
             String line;
             bufferedReader.readLine();
             bufferedReader.readLine();
             bufferedReader.readLine();
+
             while ((line = bufferedReader.readLine()) != null) {
                 System.out.println(line);
                 String[] nextLine = line.split(";");
@@ -65,11 +69,29 @@ public class FileServiceImpl implements FileService {
 
 
                 if (nextLine.length > 46 && !nextLine[46].isEmpty()) {
-                    ivsrDTO.setPlannedHandoverWeek(nextLine[46].replace("'", ""));
+                    String plannedHandOverWeek = nextLine[46].replace("'", "");
+                    if (plannedHandOverWeek.length() != 8) {
+                        errorMessages.add("Fejl på linje " + lineNumber + " - planned handover week forventer 8 karakterer");
+
+                    } else if(!plannedHandOverWeek.matches("\\d*")) {
+                        errorMessages.add("Fejl på linje " + lineNumber + " - planned handover week kan ikke indeholde bogstaver");
+
+                    } else {
+                        ivsrDTO.setPlannedHandoverWeek(plannedHandOverWeek);
+                    }
                 }
 
                 if (nextLine.length > 47 && !nextLine[47].isEmpty()) {
-                    ivsrDTO.setExpectedDeliveryWeek(nextLine[47].replace("'", ""));
+                    String expectedDeliveryDate = nextLine[47].replace("'", "");
+                    if (expectedDeliveryDate.length() != 8) {
+                        errorMessages.add("Fejl på linje " + lineNumber + " - expected delivery week forventer 8 karakterer");
+
+                    } else if(!expectedDeliveryDate.matches("\\d*")) {
+                        errorMessages.add("Fejl på linje " + lineNumber + " - expected delivery week kan ikke indeholde bogstaver");
+
+                    } else {
+                        ivsrDTO.setExpectedDeliveryWeek(expectedDeliveryDate);
+                    }
                 }
 
 
@@ -77,27 +99,44 @@ public class FileServiceImpl implements FileService {
                 String productionDate = (nextLine[25].trim());
 
                 if (!productionDate.isEmpty()) {
-                    LocalDate localDate = parseDate(productionDate);
-                    ivsrDTO.setActualProductionDate(localDate);
+
+                    try {
+                        LocalDate localDate = parseDate(productionDate);
+                        ivsrDTO.setActualProductionDate(localDate);
+                    } catch (DateTimeParseException e) {
+                        errorMessages.add("Fejl på line " + lineNumber + " - production date har forkert format");
+                    }
+
                 }
 
                 String agreementDate = (nextLine[36].trim());
 
                 if(!agreementDate.isEmpty()){
-                    LocalDate localDate = parseDate(agreementDate);
-                    ivsrDTO.setPurchaseAgreementDate(localDate);
+
+                    try {
+                        LocalDate localDate = parseDate(agreementDate);
+                        ivsrDTO.setPurchaseAgreementDate(localDate);
+                    } catch (DateTimeParseException e) {
+                        errorMessages.add("Fejl på line " + lineNumber + " - agreement date har forkert format");
+                    }
                 }
 
 
 
                 if (nextLine.length > 40 && !nextLine[40].trim().isEmpty()) {
-                    String retailCountingDate = (nextLine[40].trim());
-                    LocalDate localDate = parseDate(retailCountingDate);
-                    ivsrDTO.setRetailCountingDate(localDate);
+
+                    try {
+                        String retailCountingDate = (nextLine[40].trim());
+                        LocalDate localDate = parseDate(retailCountingDate);
+                        ivsrDTO.setRetailCountingDate(localDate);
+                    } catch (DateTimeParseException e) {
+                        errorMessages.add("Fejl på line " + lineNumber + " - retail counting date har forkert format");
+                    }
+
                 }
 
 
-
+                lineNumber++;
 
                 if(nextLine[3].trim().contains("MI")) {
                     list.add(ivsrDTO);
@@ -109,6 +148,11 @@ public class FileServiceImpl implements FileService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        if (!errorMessages.isEmpty()) {
+            throw new FileException(errorMessages);
+        }
+
         return list;
     }
 
