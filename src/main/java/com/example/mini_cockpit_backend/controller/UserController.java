@@ -10,7 +10,10 @@ import com.example.mini_cockpit_backend.service.auth.AuthService;
 import com.example.mini_cockpit_backend.service.verify.EmailVerificationService;
 import com.example.mini_cockpit_backend.service.verify.EmailVerificationServiceImpl;
 import com.example.mini_cockpit_backend.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,7 @@ public class UserController {
     private final AuthService authService;
     private final EmailVerificationService emailVerificationService;
     private final UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 
     @PostMapping("/register")
@@ -38,6 +42,7 @@ public class UserController {
         }
 
         else if (!emailVerificationService.canProceed(registerRequest.getEmail())) {
+            logger.warn("UNAUTHENTICATED REGISTER REQUEST");
             return ResponseEntity.status(403).body(new Response(403, "Email not allowed"));
         }
 
@@ -53,7 +58,17 @@ public class UserController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthRes> register(@RequestBody AuthRequest authRequest) {
-        return new ResponseEntity<>(authService.authenticate(authRequest), HttpStatus.OK);
+        try {
+            AuthRes authRes = authService.authenticate(authRequest);
+            return new ResponseEntity<>(authRes, HttpStatus.OK);
+
+        } catch (Exception e) {
+
+            logger.warn("UNAUTHENTICATED USER AT /AUTHENTICATE");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+
     }
 
     @GetMapping("/validate")
