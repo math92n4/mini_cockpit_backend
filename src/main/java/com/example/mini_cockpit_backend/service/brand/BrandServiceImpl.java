@@ -18,7 +18,9 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Brand save(Brand brand) {
-        String brandName = brand.getName().trim().toUpperCase();
+        String brandName = (brand.getName() == null || brand.getName().trim().isEmpty())
+                ? "Ikke sat"
+                : brand.getName().trim().toUpperCase();
 
         if (brandName.contains("MI")) {
             brandName = "MINI";
@@ -30,10 +32,13 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Brand findByName(String name) {
-        String brandName = name.toUpperCase().trim();
-        if (brandName.contains("MI")) {
-            brandName = "MINI";
+        if(name != null) {
+            String brandName = name.toUpperCase().trim();
+            if (brandName.contains("MI")) {
+                brandName = "MINI";
+            }
+            return brandRepository.findByName(brandName);
         }
-        return brandRepository.findByName(brandName);
+        return null;
     }
 }

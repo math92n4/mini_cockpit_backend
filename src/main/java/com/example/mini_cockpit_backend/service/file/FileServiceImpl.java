@@ -46,6 +46,11 @@ public class FileServiceImpl implements FileService {
                 IvsrDTO ivsrDTO = new IvsrDTO();
 
                 String productionNumber = nextLine[0].replace("'", "");
+
+                if(productionNumber.trim().isEmpty()) {
+                    errorMessages.add("Fejl på linje " + lineNumber + " - mangler produktionsnummer");
+                }
+
                 if (productionNumber.startsWith("0")) {
                     productionNumber = productionNumber.substring(1);
                 }
@@ -70,29 +75,33 @@ public class FileServiceImpl implements FileService {
 
                 if (nextLine.length > 46 && !nextLine[46].isEmpty()) {
                     String plannedHandOverWeek = nextLine[46].replace("'", "");
+
+                    if(!plannedHandOverWeek.matches("\\d*")) {
+                        errorMessages.add("Fejl på linje " + lineNumber + " - planned handover week kan ikke indeholde bogstaver");
+                    }
+
                     if (plannedHandOverWeek.length() != 8) {
                         errorMessages.add("Fejl på linje " + lineNumber + " - planned handover week forventer 8 karakterer");
-
-                    } else if(!plannedHandOverWeek.matches("\\d*")) {
-                        errorMessages.add("Fejl på linje " + lineNumber + " - planned handover week kan ikke indeholde bogstaver");
-
-                    } else {
-                        ivsrDTO.setPlannedHandoverWeek(plannedHandOverWeek);
                     }
+
+                    ivsrDTO.setPlannedHandoverWeek(plannedHandOverWeek);
                 }
 
                 if (nextLine.length > 47 && !nextLine[47].isEmpty()) {
+
                     String expectedDeliveryDate = nextLine[47].replace("'", "");
+
                     if (expectedDeliveryDate.length() != 8) {
                         errorMessages.add("Fejl på linje " + lineNumber + " - expected delivery week forventer 8 karakterer");
 
-                    } else if(!expectedDeliveryDate.matches("\\d*")) {
-                        errorMessages.add("Fejl på linje " + lineNumber + " - expected delivery week kan ikke indeholde bogstaver");
-
-                    } else {
-                        ivsrDTO.setExpectedDeliveryWeek(expectedDeliveryDate);
                     }
+                    if (!expectedDeliveryDate.matches("\\d*")) {
+                        errorMessages.add("Fejl på linje " + lineNumber + " - expected delivery week kan ikke indeholde bogstaver");
+                    }
+
+                    ivsrDTO.setExpectedDeliveryWeek(expectedDeliveryDate);
                 }
+
 
 
 

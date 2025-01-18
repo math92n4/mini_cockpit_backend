@@ -65,7 +65,7 @@ public class IvsrController {
     @PostMapping("/add")
     public ResponseEntity<PostIvsrDTO> postIvsr(@RequestBody PostIvsrDTO postIvsrDTO) {
 
-        Ivsr foundIvsr = ivsrService.getByProductionNumber(postIvsrDTO.getProductionNumber().toUpperCase());
+        Ivsr foundIvsr = ivsrService.getByProductionNumber(postIvsrDTO.getProductionNumber().toUpperCase().trim());
         if (foundIvsr != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

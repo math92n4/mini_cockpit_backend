@@ -37,7 +37,7 @@ public class SharepointCaseServiceImpl implements SharepointCaseService {
         for (SharepointCaseDTO sharepointDto : dtos) {
 
             Ivsr ivsr;
-            String productionNumber = sharepointDto.getTitle();
+            String productionNumber = sharepointDto.getTitle().trim();
             System.out.println(productionNumber);
 
             if (ivsrService.doesExist(productionNumber)) {

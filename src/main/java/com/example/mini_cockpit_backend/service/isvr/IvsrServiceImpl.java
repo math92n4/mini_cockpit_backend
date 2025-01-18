@@ -94,7 +94,12 @@ public class IvsrServiceImpl implements IvsrService {
     public IvsrDTO updateCar(IvsrDTO ivsrDTO) {
         Ivsr ivsr = getByProductionNumber(ivsrDTO.getProductionNumber());
 
-        Brand brand = brandService.findByName(ivsrDTO.getBrand());
+        String brandName = ivsrDTO.getBrand();
+        if (brandName == null || brandName.trim().isEmpty()) {
+            brandName = "Ikke sat";
+        }
+
+        Brand brand = brandService.findByName(brandName);
 
         if (brand == null) {
             brand = new Brand();
@@ -104,15 +109,27 @@ public class IvsrServiceImpl implements IvsrService {
             brand.setName(ivsrDTO.getBrand());
         }
 
-        Model model = modelService.find(ivsrDTO.getModelCode(), ivsrDTO.getModelDescription());
+        String modelCode = ivsrDTO.getModelCode();
+
+        if(modelCode == null || modelCode.trim().isEmpty()) {
+            modelCode = "Ikke sat";
+        }
+
+        String modelDesc = ivsrDTO.getModelDescription();
+
+        if(modelDesc == null || modelDesc.trim().isEmpty()) {
+            modelDesc = "Ikke sat";
+        }
+
+        Model model = modelService.find(modelCode, modelDesc);
 
         if (model == null) {
             model = new Model();
         }
 
         model.setBrand(brand);
-        model.setModelCode(ivsrDTO.getModelCode());
-        model.setModelDescription(ivsrDTO.getModelDescription());
+        model.setModelCode(modelCode);
+        model.setModelDescription(modelDesc);
         model = modelService.save(model);
 
         /*
